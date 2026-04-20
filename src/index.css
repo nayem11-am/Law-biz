@@ -100,10 +100,10 @@ a {
 
 @keyframes marquee-ltr {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(-100%);
   }
 }
 
@@ -508,6 +508,10 @@ button {
 }
 
 @media (max-width: 768px) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .app * {
     transition: none !important;
     animation: none !important;

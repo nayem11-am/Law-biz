@@ -64,7 +64,7 @@ function App() {
         }
 
         if (isMobile) {
-          window.scrollTo({ top, left: 0, behavior: 'smooth' })
+          window.scrollTo({ top, left: 0, behavior: 'auto' })
           return
         }
 

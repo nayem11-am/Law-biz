@@ -7,7 +7,7 @@ const links = [
   { label: 'Courses', to: '/#courses' },
   { label: 'Policy', to: '/#policy' },
   { label: 'Reviews', to: '/#reviews' },
-  { label: 'Contact Us', to: '/#contact-us' },
+  { label: 'Contact us', to: '/#contact-us' },
 ]
 
 function Footer() {

@@ -867,6 +867,9 @@ function Section({
               <p className="mt-4 text-center text-sm leading-relaxed text-[#5f6d62]">
                 Complete the form below to confirm your seat. You can submit for single or multiple selected courses in one request.
               </p>
+              <p className="mt-2 text-center text-sm leading-relaxed text-[#5f6d62]">
+                Enrollment confirmation will be sent to your email within 24 hours.
+              </p>
 
               <div className="mt-5 rounded-2xl border border-[#dee7e0] bg-[#f7faf8] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6d62]">Selected Courses</p>
