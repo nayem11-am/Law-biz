@@ -28,10 +28,14 @@ function CoursesPage() {
       <Section
         id="courses"
         title="Enroll Courses"
-        subtitle=""
+        subtitle="Pick your preferred law subjects and complete one professional enrollment form for single or multiple courses."
+        details={[
+          'Build a clear legal foundation with guided, practical learning designed for exam performance and academic growth.',
+          'Every course follows a structured 4-month track with affordable package options for multi-course enrollment.',
+        ]}
         courses={lawCourses}
-        hideDetails
         animation={sectionFadeUp}
+        showCourseBackLink
       />
     </main>
   )

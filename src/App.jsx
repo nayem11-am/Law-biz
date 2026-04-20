@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -9,7 +9,6 @@ import CoursesPage from './pages/CoursesPage'
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
-  const skipNextScrollHandling = useRef(false)
 
   const scrollToSection = useCallback((id, smooth = true) => {
     const attempt = (retries) => {
@@ -34,9 +33,11 @@ function App() {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
     }
+  }, [])
 
+  useEffect(() => {
     const markReload = () => {
-      sessionStorage.setItem('force_home_on_next_load', '1')
+      sessionStorage.setItem('force_home_on_reload', '1')
     }
 
     window.addEventListener('beforeunload', markReload)
@@ -44,26 +45,17 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const shouldForceHome = sessionStorage.getItem('force_home_on_next_load') === '1'
+    const shouldForceHome = sessionStorage.getItem('force_home_on_reload') === '1'
     if (!shouldForceHome) return
 
-    sessionStorage.removeItem('force_home_on_next_load')
-    skipNextScrollHandling.current = true
+    sessionStorage.removeItem('force_home_on_reload')
 
     if (location.pathname !== '/' || location.hash || location.state) {
       navigate('/', { replace: true, state: null })
-      return
     }
-
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [location.pathname, location.hash, location.state, navigate])
 
   useEffect(() => {
-    if (skipNextScrollHandling.current) {
-      skipNextScrollHandling.current = false
-      return
-    }
-
     if (location.state?.scrollTo) {
       scrollToSection(location.state.scrollTo, true)
 

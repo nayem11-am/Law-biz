@@ -40,14 +40,14 @@ const cardTopBorders = ['#b38b59', '#8f6f49', '#c9a36a', '#a67c52', '#d1b07b']
 
 function AboutPage() {
   return (
-    <main className="relative overflow-hidden bg-gradient-to-br from-[#fbfaff] via-[#f2f6ff] to-[#ebf3ff] pt-28 pb-24">
+    <main className="relative overflow-hidden bg-gradient-to-br from-[#f1f4ee] via-[#eaeee7] to-[#e3e8df] pt-24 pb-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-8 top-24 z-0 h-[220px] w-[220px] rounded-full bg-[#e4eeff]/30 blur-3xl sm:h-[280px] sm:w-[280px] md:h-[320px] md:w-[320px]"
+        className="pointer-events-none absolute left-8 top-24 z-0 h-[220px] w-[220px] rounded-full bg-[#dde6d8]/34 blur-3xl sm:h-[280px] sm:w-[280px] md:h-[320px] md:w-[320px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-8 top-1/2 z-0 h-[260px] w-[260px] -translate-y-1/2 rounded-full bg-[#d6e6ff]/26 blur-3xl sm:h-[320px] sm:w-[320px] md:h-[380px] md:w-[380px]"
+        className="pointer-events-none absolute right-8 top-1/2 z-0 h-[260px] w-[260px] -translate-y-1/2 rounded-full bg-[#d3dfcd]/30 blur-3xl sm:h-[320px] sm:w-[320px] md:h-[380px] md:w-[380px]"
       />
       <div className="pointer-events-none absolute inset-0 z-10 bg-white/35" aria-hidden="true" />
 
@@ -57,7 +57,7 @@ function AboutPage() {
           className="relative z-20 mx-auto max-w-3xl rounded-[32px] bg-white/78 p-8 shadow-[0_12px_35px_rgba(0,0,0,0.05)]"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8a6b4b]">About</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-[#1f1a17] sm:text-5xl">
+          <h1 className="mt-2 text-5xl font-extrabold tracking-tight text-[#1f1a17] sm:text-6xl">
             Blackstone Law Academy
           </h1>
           <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-[#51463c]">
@@ -81,7 +81,7 @@ function AboutPage() {
                   aria-hidden="true"
                   className="h-7 w-7 rounded-full border border-[#ceb089] bg-[#f8f2e8] shadow-[inset_0_0_0_1px_rgba(179,139,89,0.25)]"
                 />
-                <h2 className="text-2xl font-semibold text-[#1f1a17]">{card.title}</h2>
+                <h2 className="text-3xl font-bold text-[#1f1a17]">{card.title}</h2>
               </div>
 
               {card.body ? (
@@ -106,15 +106,14 @@ function AboutPage() {
           className="rounded-[32px] bg-[#1f1a17] p-8 text-white shadow-[0_12px_35px_rgba(0,0,0,0.2)] sm:flex sm:items-center sm:justify-between"
         >
           <div>
-            <h2 className="text-2xl font-semibold">Contact and Admission</h2>
+            <h2 className="text-3xl font-bold">Contact and Admission</h2>
             <p className="mt-2 max-w-[62ch] text-[#e8dccf]">
               Ready to start your legal journey with a premium learning path? Connect with our
               admissions team to get guidance on enrollment.
             </p>
           </div>
           <Link
-            to="/"
-            state={{ scrollTo: 'courses' }}
+            to="/courses"
             className="mt-5 inline-flex items-center rounded-full bg-white px-6 py-3 text-sm font-semibold !text-black transition-all duration-300 hover:-translate-y-1 hover:!text-black hover:shadow-xl sm:mt-0"
           >
             Explore Courses

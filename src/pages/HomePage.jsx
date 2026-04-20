@@ -12,44 +12,39 @@ const sectionFadeUp = {
 
 const policySections = [
   {
-    title: 'Terms of Use',
-    paragraphs: [
-      'Blackstone Law Academy provides educational content for learning and guidance purposes only. We do not offer official legal advice, and our materials should not be relied upon as a substitute for professional legal consultation or formal university instruction.',
-    ],
+    title: 'Educational Disclaimer',
+    paragraphs: ['Blackstone Law Academy provides educational content for learning and guidance purposes only. We do not offer official legal advice, and our materials should not be relied upon as a substitute for professional legal consultation or formal university instruction.'],
   },
   {
     title: 'Academic Integrity',
-    paragraphs: ['We are committed to maintaining high academic standards. Students are expected to:'],
+    paragraphs: ['We are committed to maintaining high academic standards.'],
     points: [
       'Use our materials for learning purposes only',
       'Avoid plagiarism or academic misconduct',
-      'Not submit our content as their own in university assessments',
+      'Do not submit our content as your own in university assessments',
     ],
-    closing:
-      'Blackstone Law Academy does not support or promote any form of academic dishonesty.',
+    note: 'Blackstone Law Academy does not support or promote any form of academic dishonesty.',
   },
   {
-    title: 'Fees & Payments',
-    paragraphs: [
-      'All course fees must be paid in advance. Fees are non-refundable once access to materials or classes has been granted. Exceptions may apply in special circumstances at our discretion.',
+    title: 'Payment & Refund Policy',
+    points: [
+      'All course fees must be paid in advance',
+      'Fees are non-refundable once access to materials or classes has been granted',
+      'Exceptions may apply in special circumstances at our discretion',
     ],
   },
   {
     title: 'Privacy Policy',
-    paragraphs: [
-      'We respect the privacy of our students and users. Any personal information shared with us (such as name, email, or contact details) will:',
-    ],
+    paragraphs: ['We respect the privacy of our students and users.'],
     points: [
-      'Be kept confidential',
-      'Not be shared with third parties without consent',
-      'Be used only for educational and communication purposes',
+      'Personal information such as name, email, or contact details will be kept confidential',
+      'Information will not be shared with third parties without consent',
+      'Information will only be used for educational and communication purposes',
     ],
   },
   {
     title: 'Policy Updates',
-    paragraphs: [
-      'We reserve the right to update or modify these policies at any time. Users are encouraged to review this section periodically.',
-    ],
+    paragraphs: ['We reserve the right to update or modify these policies at any time. Users are encouraged to review this section periodically.'],
   },
 ]
 
@@ -87,10 +82,9 @@ function HomePage() {
 
       <Section
         id="policy"
-        title="Policy"
-        subtitle="We prioritize fairness, academic integrity, and transparent student policies."
+        title="Policies & Guidelines"
+        subtitle="Please review our policies carefully to understand how Blackstone Law Academy operates and what students can expect."
         policySections={policySections}
-        hideDetails
         animation={sectionFadeUp}
       />
 

@@ -1,8 +1,7 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
 
 :root {
-  --bg: #f7f7f3;
+  --bg: #ecefe8;
   --surface: #ffffff;
   --text: #1f2220;
   --muted: #565d58;
@@ -30,11 +29,11 @@ body {
   padding: 0;
   overflow-x: hidden;
   min-width: 320px;
-  font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 16px;
   line-height: 1.56;
   color: var(--text);
-  background: radial-gradient(circle at top right, #eff2ec, var(--bg));
+  background: radial-gradient(circle at top right, #e7ece3, var(--bg));
   scrollbar-gutter: stable;
   -ms-overflow-style: none;
 }
@@ -81,7 +80,7 @@ a {
 }
 
 .logo {
-  font-family: 'Syne', 'Manrope', sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #ffffff;
@@ -117,7 +116,7 @@ a {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 6rem 1.5rem 3rem;
+  padding: 5.25rem 1.5rem 3rem;
 }
 
 .section-inner {
@@ -131,8 +130,9 @@ a {
 
 .section h2 {
   margin: 0;
-  font-family: 'Syne', 'Manrope', sans-serif;
-  font-size: clamp(2rem, 3.8vw, 2.9rem);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2.2rem, 4.2vw, 3.35rem);
+  font-weight: 800;
   line-height: 1.08;
 }
 
@@ -192,9 +192,17 @@ a {
 
 .hero h1 {
   margin: 1rem 0 0;
-  font-family: 'Syne', 'Manrope', sans-serif;
-  font-size: clamp(2.25rem, 5.7vw, 4rem);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2.5rem, 6.2vw, 4.4rem);
+  font-weight: 800;
   line-height: 1.1;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
 }
 
 .hero .subheading {
@@ -268,7 +276,7 @@ a {
 
 .review-form .btn-primary {
   width: fit-content;
-  background: var(--indigo-600);
+  background: #4f8fce;
   color: #ffffff;
 }
 
@@ -337,7 +345,7 @@ a {
   }
 
   .section {
-    padding-top: 8rem;
+    padding-top: 6.75rem;
   }
 
   .nav-links {
@@ -348,7 +356,7 @@ a {
 
 @media (max-width: 600px) {
   .section {
-    padding: 8.5rem 1rem 2.5rem;
+    padding: 7rem 1rem 2.5rem;
   }
 
   .section p {

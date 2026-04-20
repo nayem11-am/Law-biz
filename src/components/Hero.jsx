@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { motion as Motion } from 'framer-motion'
 
 const itemVariants = {
@@ -6,15 +7,28 @@ const itemVariants = {
 }
 
 function Hero() {
+  const videoRef = useRef(null)
+
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return
+    if (videoRef.current.currentTime >= 12) {
+      videoRef.current.currentTime = 0
+      videoRef.current.play()
+    }
+  }
+
   return (
     <section className="section hero" id="hero">
       <div className="hero-video-wrap" aria-hidden="true">
         <video
+          ref={videoRef}
           className="hero-video"
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          onTimeUpdate={handleTimeUpdate}
           src="https://videos.pexels.com/video-files/3209298/3209298-hd_1920_1080_25fps.mp4"
         />
       </div>
