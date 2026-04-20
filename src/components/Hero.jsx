@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { motion as Motion } from 'framer-motion'
 
+const desktopHeroVideo = 'https://videos.pexels.com/video-files/3209298/3209298-hd_1920_1080_25fps.mp4'
+const mobileHeroVideo = '/hero-mobile.mp4'
+
 const itemVariants = {
   hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0 },
@@ -35,11 +38,12 @@ function Hero() {
           loop
           muted
           playsInline
-          preload="auto"
-          fetchPriority="high"
+          preload="metadata"
           onTimeUpdate={handleTimeUpdate}
-          src="https://videos.pexels.com/video-files/3209298/3209298-hd_1920_1080_25fps.mp4"
-        />
+        >
+          <source media="(max-width: 767px)" src={mobileHeroVideo} type="video/mp4" />
+          <source src={desktopHeroVideo} type="video/mp4" />
+        </video>
       </div>
       <div className="hero-overlay" aria-hidden="true" />
       <Motion.div
