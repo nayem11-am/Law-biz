@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion as Motion } from 'framer-motion'
 
 const itemVariants = {
@@ -8,6 +8,14 @@ const itemVariants = {
 
 function Hero() {
   const videoRef = useRef(null)
+
+  useEffect(() => {
+    if (!videoRef.current) return
+
+    // Start fetching and attempt playback as early as possible on mobile and desktop.
+    videoRef.current.load()
+    videoRef.current.play().catch(() => {})
+  }, [])
 
   const handleTimeUpdate = () => {
     if (!videoRef.current) return
@@ -27,7 +35,8 @@ function Hero() {
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
+          fetchPriority="high"
           onTimeUpdate={handleTimeUpdate}
           src="https://videos.pexels.com/video-files/3209298/3209298-hd_1920_1080_25fps.mp4"
         />

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion as Motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const textContainer = {
   hidden: {},
@@ -21,8 +21,8 @@ const MotionLink = Motion(Link)
 const enrollmentPackages = [
   { count: 1, fee: 2000, note: 'Single course plan' },
   { count: 2, fee: 4000, note: 'Best for focused progression' },
-  { count: 3, fee: 5000, note: 'Save 1000 BDT' },
-  { count: 4, fee: 6000, note: 'Save 2000 BDT' },
+  { count: 3, fee: 5000, note: 'Discount 1000 BDT' },
+  { count: 4, fee: 6000, note: 'Discount 2000 BDT' },
 ]
 
 const yearLabels = ['1st Year', '2nd Year', '3rd Year']
@@ -30,32 +30,32 @@ const contactItems = [
   {
     key: 'phone',
     label: 'Phone',
-    value: '+8801XXXXXXXXX',
-    href: 'tel:+8801XXXXXXXXX',
+    value: '+880 1410554311',
+    href: 'tel:+8801410554311',
   },
   {
     key: 'email',
     label: 'Email',
-    value: 'support@blackstonelawacademy.com',
-    href: 'mailto:support@blackstonelawacademy.com',
+    value: 'blackstonelawacademy@gmail.com',
+    href: 'mailto:blackstonelawacademy@gmail.com',
   },
   {
     key: 'facebook',
     label: 'Facebook',
-    value: 'facebook.com/blackstonelawacademy',
-    href: 'https://facebook.com/blackstonelawacademy',
+    value: 'facebook.com/blackstonelawacademybd',
+    href: 'https://www.facebook.com/blackstonelawacademybd',
   },
   {
     key: 'instagram',
     label: 'Instagram',
     value: 'instagram.com/blackstonelawacademy',
-    href: 'https://instagram.com/blackstonelawacademy',
+    href: 'https://www.instagram.com/blackstonelawacademy?igsh=MXdiYXE3ZGFwdmFtNw==',
   },
   {
     key: 'linkedin',
     label: 'LinkedIn',
-    value: 'linkedin.com/company/blackstonelawacademy',
-    href: 'https://linkedin.com/company/blackstonelawacademy',
+    value: 'linkedin.com/in/blackstone-law-academy-689b25404',
+    href: 'https://www.linkedin.com/in/blackstone-law-academy-689b25404?utm_source=share_via&utm_content=profile&utm_medium=member_android',
   },
 ]
 
@@ -223,7 +223,6 @@ function Section({
   cta,
   className = '',
   hideDetails = false,
-  showCourseBackLink = false,
 }) {
   const isServices = id === 'services'
   const isCourses = id === 'courses'
@@ -234,8 +233,8 @@ function Section({
   const serviceDetails = (details && details.length > 0 ? details : [subtitle]).slice(0, 3)
 
   const sectionRef = useRef(null)
-  const navigate = useNavigate()
   const [servicesVisibleCount, setServicesVisibleCount] = useState(0)
+  const [isMobileViewport, setIsMobileViewport] = useState(() => window.matchMedia('(max-width: 768px), (pointer: coarse)').matches)
 
   const [selectedCourses, setSelectedCourses] = useState([])
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false)
@@ -256,8 +255,23 @@ function Section({
     offset: ['start start', 'end end'],
   })
 
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px), (pointer: coarse)')
+    const onChange = (event) => setIsMobileViewport(event.matches)
+
+    setIsMobileViewport(media.matches)
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [])
+
+  useEffect(() => {
+    if (isServices && isMobileViewport) {
+      setServicesVisibleCount(3)
+    }
+  }, [isServices, isMobileViewport])
+
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (!isServices) return
+    if (!isServices || isMobileViewport) return
 
     const nextCount = latest < 0.18 ? 0 : latest < 0.46 ? 1 : latest < 0.74 ? 2 : 3
     setServicesVisibleCount((prev) => (nextCount > prev ? nextCount : prev))
@@ -298,6 +312,45 @@ function Section({
     setSelectedCourses((prev) => prev.filter((course) => courses.includes(course)))
   }, [courses, hasCourseCatalog, selectedCourses.length])
 
+  useEffect(() => {
+    if (!isEnrollModalOpen) return
+
+    const scrollY = window.scrollY
+    const originalBodyStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+    }
+    const originalHtmlStyles = {
+      overflow: document.documentElement.style.overflow,
+      overscrollBehavior: document.documentElement.style.overscrollBehavior,
+    }
+
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.overscrollBehavior = 'none'
+    document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.left = '0'
+    document.body.style.right = '0'
+    document.body.style.width = '100%'
+
+    return () => {
+      document.body.style.overflow = originalBodyStyles.overflow
+      document.body.style.position = originalBodyStyles.position
+      document.body.style.top = originalBodyStyles.top
+      document.body.style.left = originalBodyStyles.left
+      document.body.style.right = originalBodyStyles.right
+      document.body.style.width = originalBodyStyles.width
+      document.documentElement.style.overflow = originalHtmlStyles.overflow
+      document.documentElement.style.overscrollBehavior = originalHtmlStyles.overscrollBehavior
+      window.scrollTo(0, scrollY)
+    }
+  }, [isEnrollModalOpen])
+
   const toggleCourseSelection = (courseName) => {
     setSelectedCourses((prev) =>
       prev.includes(courseName) ? prev.filter((name) => name !== courseName) : [...prev, courseName]
@@ -307,6 +360,14 @@ function Section({
   const closeEnrollmentModal = () => {
     setIsEnrollModalOpen(false)
     setFormStatus('')
+  }
+
+  const preventBackgroundScroll = (event) => {
+    event.preventDefault()
+  }
+
+  const allowModalScrollOnly = (event) => {
+    event.stopPropagation()
   }
 
   const openEnrollmentModal = () => {
@@ -323,15 +384,6 @@ function Section({
     setSelectedCourses([courseName])
     setFormStatus('')
     setIsEnrollModalOpen(true)
-  }
-
-  const handleBackNavigation = () => {
-    if (window.history.length > 1) {
-      navigate(-1)
-      return
-    }
-
-    navigate('/#courses')
   }
 
   const handleFormInput = (event) => {
@@ -471,46 +523,25 @@ function Section({
           <Motion.div
             className="mx-auto max-w-5xl text-center md:mx-0 md:max-w-5xl md:text-left"
             variants={textContainer}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
+            initial={isMobileViewport ? false : 'hidden'}
+            whileInView={isMobileViewport ? undefined : 'show'}
+            viewport={isMobileViewport ? undefined : { once: true, amount: 0.3 }}
           >
-            {showCourseBackLink && hasCourseCatalog ? (
-              <div className="mt-1 flex flex-wrap items-center justify-between gap-4">
-                <Motion.h2
-                  variants={textItem}
-                  className="text-5xl font-extrabold tracking-tight text-[#1f1a17] sm:text-6xl"
-                >
-                  {title}
-                </Motion.h2>
-                <Motion.button
-                  variants={textItem}
-                  type="button"
-                  onClick={handleBackNavigation}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="inline-flex items-center rounded-full border border-[#4d5d2f] bg-[#667c3c] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#5a6e35]"
-                >
-                  Back
-                </Motion.button>
-              </div>
-            ) : (
-              <Motion.h2
-                variants={textItem}
-                className={`${isServices ? '-mt-1 sm:-mt-1.5' : 'mt-1'} text-5xl font-extrabold tracking-tight text-[#1f1a17] sm:text-6xl`}
-              >
-                {title}
-              </Motion.h2>
-            )}
+            <Motion.h2
+              variants={textItem}
+              className={`${isServices ? '-mt-1 sm:-mt-1.5' : 'mt-1'} text-5xl font-extrabold tracking-tight text-[#1f1a17] sm:text-6xl`}
+            >
+              {title}
+            </Motion.h2>
           </Motion.div>
 
           {!hideDetails ? (
             <Motion.div
               className="mt-7 w-full max-w-none"
               variants={textContainer}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
+              initial={isMobileViewport ? false : 'hidden'}
+              whileInView={isMobileViewport ? undefined : 'show'}
+              viewport={isMobileViewport ? undefined : { once: true, amount: 0.3 }}
             >
               {isPolicy && policySections?.length ? (
                 <Motion.div
@@ -518,10 +549,10 @@ function Section({
                   className="mx-auto w-full max-w-6xl"
                 >
                   <Motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55, ease: 'easeOut' }}
-                    viewport={{ once: true, amount: 0.25 }}
+                    initial={isMobileViewport ? false : { opacity: 0, y: 24 }}
+                    whileInView={isMobileViewport ? undefined : { opacity: 1, y: 0 }}
+                    transition={isMobileViewport ? { duration: 0 } : { duration: 0.55, ease: 'easeOut' }}
+                    viewport={isMobileViewport ? undefined : { once: true, amount: 0.25 }}
                     className="mb-7 rounded-3xl border border-[#dfe5ef] bg-[#f9fbfd] px-6 py-6 shadow-[0_16px_35px_rgba(16,24,40,0.06)] md:px-8"
                   >
                     <p className="text-left text-base leading-relaxed text-[#334155]">
@@ -537,11 +568,11 @@ function Section({
                       <Motion.article
                         key={section.anchor}
                         id={section.anchor}
-                        initial={{ opacity: 0, y: 30, scale: 0.985 }}
-                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.5, ease: 'easeOut', delay: idx * 0.06 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        whileHover={{ y: -4 }}
+                        initial={isMobileViewport ? false : { opacity: 0, y: 30, scale: 0.985 }}
+                        whileInView={isMobileViewport ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                        transition={isMobileViewport ? { duration: 0 } : { duration: 0.5, ease: 'easeOut', delay: idx * 0.06 }}
+                        viewport={isMobileViewport ? undefined : { once: true, amount: 0.2 }}
+                        whileHover={isMobileViewport ? undefined : { y: -4 }}
                         className="group relative overflow-hidden rounded-[28px] border border-[#dde5f0] bg-white px-6 py-6 shadow-[0_14px_35px_rgba(15,23,42,0.07)] transition-all duration-300 hover:border-[#d2deec] hover:shadow-[0_22px_42px_rgba(15,23,42,0.12)] md:px-7 md:py-7"
                       >
                         <div
@@ -606,12 +637,12 @@ function Section({
                     <Motion.article
                       key={`${id}-card-${idx}`}
                       initial={false}
-                      animate={servicesVisibleCount >= idx + 1 ? 'show' : 'hidden'}
+                      animate={isMobileViewport ? 'show' : servicesVisibleCount >= idx + 1 ? 'show' : 'hidden'}
                       variants={{
                         hidden: { opacity: 0.16, y: 34, scale: 0.985 },
                         show: { opacity: 1, y: 0, scale: 1 },
                       }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      transition={isMobileViewport ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
                       className="relative h-full overflow-hidden rounded-[20px] border border-[#d7ddd1] bg-[linear-gradient(145deg,#ffffff_0%,#f8faf6_52%,#edf2ea_100%)] px-6 py-6 shadow-[0_16px_36px_rgba(25,34,26,0.12)]"
                     >
                       <div
@@ -632,7 +663,7 @@ function Section({
                         <Motion.div
                           className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-[#b5c8a7] via-[#8aa67a] to-[#607958]"
                           animate={{ width: serviceProgress }}
-                          transition={{ duration: 0.42, ease: 'easeOut' }}
+                          transition={isMobileViewport ? { duration: 0 } : { duration: 0.42, ease: 'easeOut' }}
                         />
                       </div>
                     </div>
@@ -655,9 +686,9 @@ function Section({
           {cta ? (
             <Motion.div
               variants={textContainer}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
+              initial={isMobileViewport ? false : 'hidden'}
+              whileInView={isMobileViewport ? undefined : 'show'}
+              viewport={isMobileViewport ? undefined : { once: true, amount: 0.3 }}
               className="mt-7 text-left"
             >
               {isInternalCta ? (
@@ -707,7 +738,7 @@ function Section({
                   {enrollmentPackages.map((pkg) => (
                     <div key={pkg.count} className="rounded-2xl border border-[#dbe3dc] bg-[#f9fbf8] p-4">
                       <p className="text-sm font-semibold text-[#4d5b50]">{pkg.count} Course{pkg.count > 1 ? 's' : ''}</p>
-                      <p className="mt-1 text-2xl font-bold text-[#1f2822]">{pkg.fee} BDT</p>
+                      <p className="mt-1 text-2xl font-bold text-[#1f2822]">{pkg.fee} BDT/month</p>
                       <p className="mt-1 text-xs text-[#6f7d72]">{pkg.note}</p>
                     </div>
                   ))}
@@ -722,9 +753,9 @@ function Section({
                 <Motion.div
                   key={group.title}
                   variants={textContainer}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.2 }}
+                  initial={isMobileViewport ? false : 'hidden'}
+                  whileInView={isMobileViewport ? undefined : 'show'}
+                  viewport={isMobileViewport ? undefined : { once: true, amount: 0.2 }}
                 >
                   <h3 className="mb-4 text-2xl font-semibold tracking-tight text-[#1f2822]">{group.title}</h3>
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -798,7 +829,11 @@ function Section({
       )}
 
       {isEnrollModalOpen ? (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-[120] overflow-hidden p-4"
+          onWheel={preventBackgroundScroll}
+          onTouchMove={preventBackgroundScroll}
+        >
           <button
             type="button"
             className="absolute inset-0 bg-[#0f1612]/60 backdrop-blur-[2px]"
@@ -806,119 +841,126 @@ function Section({
             onClick={closeEnrollmentModal}
           />
 
-          <Motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 28 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            className="relative z-10 max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-[#d8e1da] bg-white p-6 shadow-[0_24px_60px_rgba(13,26,20,0.25)] md:p-8"
-          >
-            <button
-              type="button"
-              onClick={closeEnrollmentModal}
-              className="absolute right-4 top-4 rounded-full border border-black bg-black px-3 py-1 text-xs font-semibold text-white"
+          <div className="relative z-10 flex h-full items-center justify-center py-6">
+            <Motion.div
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 28 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="relative max-h-[88vh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-[28px] border border-[#d8e1da] bg-white p-6 shadow-[0_24px_60px_rgba(13,26,20,0.25)] md:p-8"
+              onWheel={allowModalScrollOnly}
+              onTouchMove={allowModalScrollOnly}
             >
-              Close
-            </button>
+              <button
+                type="button"
+                onClick={closeEnrollmentModal}
+                aria-label="Close enrollment form"
+                className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#1a1a1a] bg-black text-white transition hover:bg-[#1f1f1f]"
+              >
+                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+                  <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
 
-            <h3 className="text-center text-3xl font-semibold tracking-tight text-[#1d2721]">Course Enrollment Form</h3>
-            <p className="mt-2 text-center text-sm font-semibold uppercase tracking-[0.16em] text-[#5a6a5e]">Duration: 4 Months</p>
-            <p className="mt-4 text-center text-sm leading-relaxed text-[#5f6d62]">
-              Complete the form below to confirm your seat. You can submit for single or multiple selected courses in one request.
-            </p>
+              <h3 className="text-center text-3xl font-semibold tracking-tight text-[#1d2721]">Course Enrollment Form</h3>
+              <p className="mt-2 text-center text-sm font-semibold uppercase tracking-[0.16em] text-[#5a6a5e]">Duration: 4 Months</p>
+              <p className="mt-4 text-center text-sm leading-relaxed text-[#5f6d62]">
+                Complete the form below to confirm your seat. You can submit for single or multiple selected courses in one request.
+              </p>
 
-            <div className="mt-5 rounded-2xl border border-[#dee7e0] bg-[#f7faf8] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6d62]">Selected Courses</p>
-              <p className="mt-2 text-sm text-[#2b392f]">{selectedCourses.join(' | ')}</p>
-            </div>
-
-            <form className="mt-6 space-y-4" onSubmit={handleFormSubmit}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <label className="text-sm font-semibold text-[#2f3d33]">
-                  Full Name
-                  <input
-                    type="text"
-                    name="fullName"
-                    required
-                    value={formValues.fullName}
-                    onChange={handleFormInput}
-                    className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
-                    placeholder="Enter student full name"
-                  />
-                </label>
-
-                <label className="text-sm font-semibold text-[#2f3d33]">
-                  Mobile No
-                  <input
-                    type="tel"
-                    name="mobile"
-                    required
-                    value={formValues.mobile}
-                    onChange={handleFormInput}
-                    className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
-                    placeholder="e.g. 01XXXXXXXXX"
-                  />
-                </label>
+              <div className="mt-5 rounded-2xl border border-[#dee7e0] bg-[#f7faf8] p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6d62]">Selected Courses</p>
+                <p className="mt-2 text-sm text-[#2b392f]">{selectedCourses.join(' | ')}</p>
               </div>
 
-              <label className="block text-sm font-semibold text-[#2f3d33]">
-                Address
-                <input
-                  type="text"
-                  name="address"
-                  required
-                  value={formValues.address}
-                  onChange={handleFormInput}
-                  className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
-                  placeholder="Enter full address"
-                />
-              </label>
+              <form className="mt-6 space-y-4" onSubmit={handleFormSubmit}>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <label className="text-sm font-semibold text-[#2f3d33]">
+                    Full Name
+                    <input
+                      type="text"
+                      name="fullName"
+                      required
+                      value={formValues.fullName}
+                      onChange={handleFormInput}
+                      className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
+                      placeholder="Enter student full name"
+                    />
+                  </label>
 
-              <label className="block text-sm font-semibold text-[#2f3d33]">
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={formValues.email}
-                  onChange={handleFormInput}
-                  className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
-                  placeholder="name@email.com"
-                />
-              </label>
-
-              <label className="block text-sm font-semibold text-[#2f3d33]">
-                Add Student Image
-                <input
-                  type="file"
-                  name="studentImage"
-                  accept="image/*"
-                  required
-                  onChange={handleImageChange}
-                  className="mt-1 block w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-[#2f3c33] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
-                />
-                {isCompressingImage ? <p className="mt-1 text-xs text-[#4e6a57]">Optimizing image...</p> : null}
-                {imageMeta ? <p className="mt-1 text-xs text-[#4e6a57]">{imageMeta}</p> : null}
-              </label>
-
-              {imagePreviewUrl ? (
-                <div className="rounded-2xl border border-[#dbe3dd] bg-[#fbfdfb] p-3">
-                  <img src={imagePreviewUrl} alt="Student preview" className="mx-auto max-h-48 rounded-xl object-cover" />
+                  <label className="text-sm font-semibold text-[#2f3d33]">
+                    Mobile No
+                    <input
+                      type="tel"
+                      name="mobile"
+                      required
+                      value={formValues.mobile}
+                      onChange={handleFormInput}
+                      className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
+                      placeholder="e.g. 01XXXXXXXXX"
+                    />
+                  </label>
                 </div>
-              ) : null}
 
-              {formStatus ? (
-                <p className="rounded-xl bg-[#eef6f0] px-4 py-2 text-sm font-medium text-[#2f4a35]">{formStatus}</p>
-              ) : null}
+                <label className="block text-sm font-semibold text-[#2f3d33]">
+                  Address
+                  <input
+                    type="text"
+                    name="address"
+                    required
+                    value={formValues.address}
+                    onChange={handleFormInput}
+                    className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
+                    placeholder="Enter full address"
+                  />
+                </label>
 
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-[#1f2822] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#151d18]"
-              >
-                Submit Enrollment
-              </button>
-            </form>
-          </Motion.div>
+                <label className="block text-sm font-semibold text-[#2f3d33]">
+                  Email
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formValues.email}
+                    onChange={handleFormInput}
+                    className="mt-1 w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#6b8f76] focus:ring-2 focus:ring-[#dce9df]"
+                    placeholder="name@email.com"
+                  />
+                </label>
+
+                <label className="block text-sm font-semibold text-[#2f3d33]">
+                  Add Student Image
+                  <input
+                    type="file"
+                    name="studentImage"
+                    accept="image/*"
+                    required
+                    onChange={handleImageChange}
+                    className="mt-1 block w-full rounded-xl border border-[#d4ddd6] bg-white px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-[#2f3c33] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
+                  />
+                  {isCompressingImage ? <p className="mt-1 text-xs text-[#4e6a57]">Optimizing image...</p> : null}
+                  {imageMeta ? <p className="mt-1 text-xs text-[#4e6a57]">{imageMeta}</p> : null}
+                </label>
+
+                {imagePreviewUrl ? (
+                  <div className="rounded-2xl border border-[#dbe3dd] bg-[#fbfdfb] p-3">
+                    <img src={imagePreviewUrl} alt="Student preview" className="mx-auto max-h-48 rounded-xl object-cover" />
+                  </div>
+                ) : null}
+
+                {formStatus ? (
+                  <p className="rounded-xl bg-[#eef6f0] px-4 py-2 text-sm font-medium text-[#2f4a35]">{formStatus}</p>
+                ) : null}
+
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-[#1f2822] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#151d18]"
+                >
+                  Submit Enrollment
+                </button>
+              </form>
+            </Motion.div>
+          </div>
         </div>
       ) : null}
 

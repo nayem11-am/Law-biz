@@ -1,6 +1,14 @@
 import { motion as Motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
-const links = ['Company', 'Services', 'Policy', 'Contact']
+const links = [
+  { label: 'Who We Are', to: '/#who-we-are' },
+  { label: 'Services', to: '/#services' },
+  { label: 'Courses', to: '/#courses' },
+  { label: 'Policy', to: '/#policy' },
+  { label: 'Reviews', to: '/#reviews' },
+  { label: 'Contact Us', to: '/#contact-us' },
+]
 
 function Footer() {
   return (
@@ -12,12 +20,15 @@ function Footer() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         viewport={{ once: true }}
       >
-        <p>Blackstone Law Academy</p>
+        <p className="footer-brand">
+          <img src="/company-logo.jpg" alt="Blackstone Law Academy logo" className="footer-logo" />
+          Blackstone Law Academy
+        </p>
         <nav aria-label="Footer links">
           {links.map((link) => (
-            <a key={link} href="#">
-              {link}
-            </a>
+            <Link key={link.to} to={link.to}>
+              {link.label}
+            </Link>
           ))}
         </nav>
       </Motion.div>
