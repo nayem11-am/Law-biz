@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const navLinks = [
   { label: 'Who We Are', to: '/#who-we-are' },
   { label: 'Services', to: '/#services' },
-  { label: 'Courses', to: '/#courses' },
+  { label: 'Courses', to: '/courses' },
   { label: 'Policy', to: '/#policy' },
   { label: 'Reviews', to: '/#reviews' },
   { label: 'Contact us', to: '/#contact-us' },
@@ -13,6 +13,7 @@ const navLinks = [
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -26,6 +27,10 @@ function Navbar() {
   }, [])
 
   const closeMenu = () => setIsMenuOpen(false)
+  const handleNavClick = (to) => {
+    closeMenu()
+    navigate(to)
+  }
 
   return (
     <header className="navbar" id="top">
@@ -61,9 +66,9 @@ function Navbar() {
           {isMenuOpen ? (
             <nav className="nav-links" aria-label="Main navigation">
               {navLinks.map((link) => (
-                <Link key={link.to} to={link.to} onClick={closeMenu}>
+                <button key={link.to} type="button" onClick={() => handleNavClick(link.to)}>
                   {link.label}
-                </Link>
+                </button>
               ))}
             </nav>
           ) : null}

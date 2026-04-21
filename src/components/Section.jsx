@@ -106,65 +106,35 @@ function ContactIcon({ type }) {
   )
 }
 
-const buildCourseImageUrl = (courseName) => {
-  const prompt = [
-    `Concept illustration for ${courseName}`,
-    'modern minimal law academy visual',
-    'legal books, scales of justice, courtroom motifs',
-    'clean academic style, soft blue and ivory color palette',
-    'digital illustration, no people, no text, no watermark',
-  ].join(', ')
-
-  const seed = courseName.toLowerCase().replace(/[^a-z0-9]/g, '-')
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=960&height=640&model=flux&seed=${seed}&nologo=true`
+const courseImageMap = {
+  'Public Law': '/courses/public-law.webp',
+  'Legal System & Method': '/courses/legal-system-method.webp',
+  'Contract Law': '/courses/contract-law.webp',
+  'Criminal Law': '/courses/criminal-law.webp',
+  'European Union Law': '/courses/european-union-law.webp',
+  'Tort Law': '/courses/tort-law.webp',
+  'Property Law': '/courses/property-law.webp',
+  'Administrative Law': '/courses/administrative-law.webp',
+  'Company Law': '/courses/company-law.webp',
+  Jurisprudence: '/courses/jurisprudence.webp',
+  'Trust Law': '/courses/trust-law.webp',
+  'Islamic Law': '/courses/islamic-law.webp',
 }
 
-const buildCoursePlaceholder = (courseName) => {
-  const safeTitle = courseName.replace(/&/g, 'and')
-  return `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#eef3ff"/>
-          <stop offset="100%" stop-color="#dce7fb"/>
-        </linearGradient>
-      </defs>
-      <rect width="960" height="640" fill="url(#g)"/>
-      <rect x="72" y="72" width="816" height="496" rx="28" fill="#ffffff" fill-opacity="0.72"/>
-      <text x="480" y="300" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="38" fill="#1f1a17" font-weight="700">Law Course</text>
-      <text x="480" y="352" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="30" fill="#4f596f">${safeTitle}</text>
-    </svg>`
-  )}`
-}
+const getCourseImageSrc = (courseName) => courseImageMap[courseName] || '/courses/public-law.webp'
 
-function CourseImage({ courseName }) {
-  const placeholder = buildCoursePlaceholder(courseName)
-  const aiUrl = buildCourseImageUrl(courseName)
-  const [src, setSrc] = useState(placeholder)
-
-  useEffect(() => {
-    let isMounted = true
-    const probe = new Image()
-
-    probe.onload = () => {
-      if (isMounted) setSrc(aiUrl)
-    }
-    probe.onerror = () => {
-      if (isMounted) setSrc(placeholder)
-    }
-    probe.src = aiUrl
-
-    return () => {
-      isMounted = false
-    }
-  }, [aiUrl, placeholder])
+function CourseImage({ courseName, onClick }) {
+  const src = getCourseImageSrc(courseName)
 
   return (
     <img
       src={src}
-      alt={`${courseName} course concept illustration`}
+      alt={`${courseName} course image`}
       loading="lazy"
-      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      width="400"
+      height="300"
+      onClick={onClick}
+      className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
     />
   )
 }
@@ -238,6 +208,7 @@ function Section({
 
   const [selectedCourses, setSelectedCourses] = useState([])
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false)
+  const [activeCourseImage, setActiveCourseImage] = useState(null)
   const [formValues, setFormValues] = useState({
     fullName: '',
     address: '',
@@ -350,6 +321,19 @@ function Section({
       window.scrollTo(0, scrollY)
     }
   }, [isEnrollModalOpen])
+
+  useEffect(() => {
+    if (!activeCourseImage) return
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setActiveCourseImage(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [activeCourseImage])
 
   const toggleCourseSelection = (courseName) => {
     setSelectedCourses((prev) =>
@@ -768,7 +752,15 @@ function Section({
                           className="group overflow-hidden rounded-[18px] border border-[#d6ddd4] bg-white/92 shadow-[0_12px_30px_rgba(26,34,28,0.09)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c4d0c0] hover:shadow-[0_18px_38px_rgba(26,34,28,0.14)]"
                         >
                           <div className="aspect-[4/3] overflow-hidden">
-                            <CourseImage courseName={courseName} />
+                            <CourseImage
+                              courseName={courseName}
+                              onClick={() =>
+                                setActiveCourseImage({
+                                  src: getCourseImageSrc(courseName),
+                                  alt: `${courseName} course image`,
+                                })
+                              }
+                            />
                           </div>
                           <div className="px-5 py-5">
                             <h4 className="text-[1.02rem] font-semibold tracking-tight text-[#1f2822]">{courseName}</h4>
@@ -979,6 +971,34 @@ function Section({
           >
             Enroll Selected ({selectedCourses.length})
           </Motion.button>
+        </div>
+      ) : null}
+
+      {activeCourseImage ? (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="absolute inset-0 bg-[#0f1612]/72"
+            aria-label="Close course image preview"
+            onClick={() => setActiveCourseImage(null)}
+          />
+          <div className="relative z-10">
+            <button
+              type="button"
+              onClick={() => setActiveCourseImage(null)}
+              aria-label="Close course image preview"
+              className="absolute -right-3 -top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#1a1a1a] bg-black text-white transition hover:bg-[#1f1f1f]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <img
+              src={activeCourseImage.src}
+              alt={activeCourseImage.alt}
+              className="max-h-[88vh] w-auto max-w-[92vw] rounded-2xl border border-[#dbe3dc] bg-white object-contain shadow-[0_24px_60px_rgba(13,26,20,0.35)]"
+            />
+          </div>
         </div>
       ) : null}
     </section>

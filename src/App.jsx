@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { MotionConfig, MotionGlobalConfig } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import CoursesPage from './pages/CoursesPage'
@@ -31,8 +30,8 @@ const smoothScrollTo = (top) => {
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
+  const hasHandledInitialReload = useRef(false)
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 768px), (pointer: coarse)').matches)
-  const skipNextLocationHandlingRef = useRef(false)
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 768px), (pointer: coarse)')
@@ -87,35 +86,24 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const markReload = () => {
-      sessionStorage.setItem('force_home_on_reload', '1')
-    }
+    if (hasHandledInitialReload.current) return
+    hasHandledInitialReload.current = true
 
-    window.addEventListener('beforeunload', markReload)
-    return () => window.removeEventListener('beforeunload', markReload)
-  }, [])
+    const navEntry = performance.getEntriesByType('navigation')[0]
+    const isReload = navEntry?.type === 'reload'
+    if (!isReload) return
 
-  useEffect(() => {
-    const shouldForceHome = sessionStorage.getItem('force_home_on_reload') === '1'
-    if (!shouldForceHome) return
-
-    sessionStorage.removeItem('force_home_on_reload')
-
-    if (location.pathname !== '/' || location.hash || location.state) {
-      skipNextLocationHandlingRef.current = true
+    if (window.location.pathname !== '/' || window.location.hash) {
       navigate('/', { replace: true, state: null })
-    }
-  }, [location.pathname, location.hash, location.state, navigate])
-
-  useEffect(() => {
-    if (skipNextLocationHandlingRef.current) {
-      skipNextLocationHandlingRef.current = false
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
       return
     }
 
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [navigate])
+
+  useEffect(() => {
     if (location.state?.scrollTo) {
-      scrollToSection(location.state.scrollTo, true)
+      scrollToSection(location.state.scrollTo, false)
 
       navigate(`${location.pathname}${location.hash}`, { replace: true, state: null })
       return
@@ -123,7 +111,7 @@ function App() {
 
     if (location.hash) {
       const targetId = location.hash.replace('#', '')
-      scrollToSection(targetId, true)
+      scrollToSection(targetId, false)
       return
     }
 
@@ -144,8 +132,6 @@ function App() {
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-
-        <Footer />
       </div>
     </MotionConfig>
   )
